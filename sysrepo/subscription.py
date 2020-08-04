@@ -218,7 +218,7 @@ def module_change_callback(session, module, xpath, event, req_id, priv):
                     config = {}
                 changes = list(session.get_changes(root_xpath + "//."))
                 task = subscription.loop.create_task(
-                    callback(event_name, req_id, config, changes, private_data)
+                    callback(session, event_name, req_id, config, changes, private_data)
                 )
                 task.add_done_callback(
                     functools.partial(subscription.task_done, task_id, event_name)
@@ -244,7 +244,7 @@ def module_change_callback(session, module, xpath, event, req_id, priv):
             except SysrepoNotFoundError:
                 config = {}
             changes = list(session.get_changes(root_xpath + "//."))
-            callback(event_name, req_id, config, changes, private_data)
+            callback(session, event_name, req_id, config, changes, private_data)
 
         return lib.SR_ERR_OK
 
@@ -424,7 +424,7 @@ def rpc_callback(session, xpath, input_node, event, req_id, output_node, priv):
 
             if task_id not in subscription.tasks:
                 task = subscription.loop.create_task(
-                    callback(input_dict, event_name, private_data)
+                    callback(session, input_dict, event_name, private_data)
                 )
                 task.add_done_callback(
                     functools.partial(subscription.task_done, task_id, event_name)
@@ -441,7 +441,7 @@ def rpc_callback(session, xpath, input_node, event, req_id, output_node, priv):
             output_dict = task.result()
 
         else:
-            output_dict = callback(input_dict, event_name, private_data)
+            output_dict = callback(session, input_dict, event_name, private_data)
 
         if event != lib.SR_EV_RPC:
             # May happen when there are multiple callback registered for the
