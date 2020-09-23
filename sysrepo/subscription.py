@@ -242,7 +242,7 @@ def module_change_callback(session, module, xpath, event, req_id, priv):
             del subscription.tasks[task_id]
             task.result()  # raise error if any
 
-        else:
+        elif event_name == "change":
             changes = list(
                 session.get_changes(
                     root_xpath + "//.",
