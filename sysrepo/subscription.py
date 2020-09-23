@@ -238,7 +238,7 @@ def module_change_callback(session, module, xpath, event, req_id, priv):
             del subscription.tasks[task_id]
             task.result()  # raise error if any
 
-        else:
+        elif event_name == "change":
             try:
                 config = session.get_data(root_xpath, include_implicit_defaults=True)
             except SysrepoNotFoundError:
